@@ -7,77 +7,79 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.button.MaterialButton;
 import java.util.List;
 
-public class CatedraAdapter extends ArrayAdapter<Catedra> {
+public class CatedraAdapter extends RecyclerView.Adapter<CatedraAdapter.ViewHolder> {
     private Context context;
     private List<Catedra> catedras;
     private DatabaseHelper db;
 
     public CatedraAdapter(Context context, List<Catedra> catedras) {
-        super(context, R.layout.item_lista_cat, catedras);
         this.context = context;
         this.catedras = catedras;
         this.db = new DatabaseHelper(context);
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.item_lista_cat, parent, false);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.item_lista_cat, parent, false);
+        return new ViewHolder(view);
+    }
 
-        TextView txtTitulo = rowView.findViewById(R.id.txtTitulo);
-        TextView txtDescripcion = rowView.findViewById(R.id.txtDescripcion);
-        ImageButton btnEditar = rowView.findViewById(R.id.btnEditar);
-        ImageButton btnEliminar = rowView.findViewById(R.id.btnEliminar);
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Catedra catedra = catedras.get(position);
 
-        final Catedra catedra = catedras.get(position);
+        holder.tvNombreCatedra.setText(catedra.getNombre());
+        holder.tvHorario.setText("Horario: " + catedra.getHorario());
 
-        // Establecer datos en las vistas
-        txtTitulo.setText(catedra.getNombre());
-        txtDescripcion.setText("Horario: " + catedra.getHorario());
-
-        // Configurar botón editar
-        btnEditar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, EditCatedraActivity.class);
-                intent.putExtra("id", catedra.getId());
-                context.startActivity(intent);
-            }
+        holder.btnEditar.setOnClickListener(v -> {
+            Intent intent = new Intent(context, EditCatedraActivity.class);
+            intent.putExtra("id", catedra.getId());
+            context.startActivity(intent);
         });
 
-        // Configurar botón eliminar
-        btnEliminar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Confirmar eliminación");
-                builder.setMessage("¿Está seguro de eliminar esta cátedra?");
-                builder.setPositiveButton("Sí", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        db.deleteCatedra(catedra.getId());
-                        catedras.remove(position);
-                        notifyDataSetChanged();
-                        Toast.makeText(context, "Cátedra eliminada", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builder.create().show();
-            }
+        holder.btnEliminar.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Confirmar eliminación");
+            builder.setMessage("¿Está seguro de eliminar esta cátedra?");
+            builder.setPositiveButton("Sí", (dialog, which) -> {
+                int position1 = holder.getAdapterPosition();
+                if (position1 != RecyclerView.NO_POSITION) {
+                    db.deleteCatedra(catedra.getId());
+                    catedras.remove(position1);
+                    notifyItemRemoved(position1);
+                    Toast.makeText(context, "Cátedra eliminada", Toast.LENGTH_SHORT).show();
+                }
+            });
+            builder.setNegativeButton("No", (dialog, which) -> dialog.dismiss());
+            builder.create().show();
         });
+    }
 
-        return rowView;
+    @Override
+    public int getItemCount() {
+        return catedras.size();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView tvNombreCatedra;
+        TextView tvHorario;
+        MaterialButton btnEditar;
+        MaterialButton btnEliminar;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvNombreCatedra = itemView.findViewById(R.id.tvNombreCatedra);
+            tvHorario = itemView.findViewById(R.id.tvHorario);
+            btnEditar = itemView.findViewById(R.id.btnEditar);
+            btnEliminar = itemView.findViewById(R.id.btnEliminar);
+        }
     }
 }

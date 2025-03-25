@@ -3,17 +3,14 @@ package com.example.pmoclase;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 
 public class EditPersonaActivity extends AppCompatActivity {
-    private EditText etDocumento, etNombre, etApellido;
-    private Button btnGuardar;
-    private TextView tvTitle;
+    private TextInputEditText etNombres, etApellidos, etDocumento, etCorreo;
+    private MaterialButton btnGuardar;
     private DatabaseHelper db;
     private int personaId;
 
@@ -26,14 +23,11 @@ public class EditPersonaActivity extends AppCompatActivity {
         db = new DatabaseHelper(this);
 
         // Inicializar componentes de UI
-        tvTitle = findViewById(R.id.tvTitle);
+        etNombres = findViewById(R.id.etNombres);
+        etApellidos = findViewById(R.id.etApellidos);
         etDocumento = findViewById(R.id.etDocumento);
-        etNombre = findViewById(R.id.etNombre);
-        etApellido = findViewById(R.id.etApellido);
+        etCorreo = findViewById(R.id.etCorreo);
         btnGuardar = findViewById(R.id.btnGuardar);
-
-        // Cambiar título
-        tvTitle.setText("Editar Persona");
 
         // Obtener ID de la persona a editar
         personaId = getIntent().getIntExtra("id", -1);
@@ -42,9 +36,10 @@ public class EditPersonaActivity extends AppCompatActivity {
             // Cargar datos de la persona
             Persona persona = db.getPersona(personaId);
             if (persona != null) {
+                etNombres.setText(persona.getNombres());
+                etApellidos.setText(persona.getApellidos());
                 etDocumento.setText(persona.getDocumento());
-                etNombre.setText(persona.getNombres());
-                etApellido.setText(persona.getApellidos());
+                etCorreo.setText(persona.getCorreo());
             }
         }
 
@@ -57,20 +52,30 @@ public class EditPersonaActivity extends AppCompatActivity {
     }
 
     private void guardarPersona() {
+        String nombres = etNombres.getText().toString().trim();
+        String apellidos = etApellidos.getText().toString().trim();
         String documento = etDocumento.getText().toString().trim();
-        String nombres = etNombre.getText().toString().trim();
-        String apellidos = etApellido.getText().toString().trim();
+        String correo = etCorreo.getText().toString().trim();
 
         // Validar campos
-        if (TextUtils.isEmpty(documento) || TextUtils.isEmpty(nombres) || TextUtils.isEmpty(apellidos)) {
+        if (TextUtils.isEmpty(nombres) || TextUtils.isEmpty(apellidos) || 
+            TextUtils.isEmpty(documento) || TextUtils.isEmpty(correo)) {
             Toast.makeText(this, "Por favor complete todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // Verificar que la persona existe
         Persona persona = db.getPersona(personaId);
-        persona.setDocumento(documento);
+        if (persona == null) {
+            Toast.makeText(this, "Error: Persona no encontrada", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Actualizar datos
         persona.setNombres(nombres);
         persona.setApellidos(apellidos);
+        persona.setDocumento(documento);
+        persona.setCorreo(correo);
 
         int result = db.updatePersona(persona);
         if (result > 0) {

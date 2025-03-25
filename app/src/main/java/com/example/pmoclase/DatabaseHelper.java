@@ -92,21 +92,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(TABLE_PERSONAS, null, KEY_ID + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null);
 
-        if (cursor != null)
-            cursor.moveToFirst();
-        else
-            return null;
-
-        Persona persona = new Persona();
-        // Populate persona object
-        persona.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
-        persona.setNombres(cursor.getString(cursor.getColumnIndex(KEY_NOMBRES)));
-        persona.setApellidos(cursor.getString(cursor.getColumnIndex(KEY_APELLIDOS)));
-        persona.setDocumento(cursor.getString(cursor.getColumnIndex(KEY_DOCUMENTO)));
-        persona.setCorreo(cursor.getString(cursor.getColumnIndex(KEY_CORREO)));
-
-        cursor.close();
-        return persona;
+        if (cursor != null && cursor.moveToFirst()) {
+            Persona persona = new Persona();
+            // Populate persona object safely
+            int idIndex = cursor.getColumnIndex(KEY_ID);
+            int nombresIndex = cursor.getColumnIndex(KEY_NOMBRES);
+            int apellidosIndex = cursor.getColumnIndex(KEY_APELLIDOS);
+            int documentoIndex = cursor.getColumnIndex(KEY_DOCUMENTO);
+            int correoIndex = cursor.getColumnIndex(KEY_CORREO);
+            
+            if (idIndex != -1) {
+                persona.setId(cursor.getInt(idIndex));
+            }
+            if (nombresIndex != -1) {
+                persona.setNombres(cursor.getString(nombresIndex));
+            }
+            if (apellidosIndex != -1) {
+                persona.setApellidos(cursor.getString(apellidosIndex));
+            }
+            if (documentoIndex != -1) {
+                persona.setDocumento(cursor.getString(documentoIndex));
+            }
+            if (correoIndex != -1) {
+                persona.setCorreo(cursor.getString(correoIndex));
+            }
+            
+            cursor.close();
+            return persona;
+        }
+        
+        if (cursor != null) {
+            cursor.close();
+        }
+        return null;
     }
 
     // Get all personas
@@ -119,13 +137,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
+            // Get column indices once
+            int idIndex = cursor.getColumnIndex(KEY_ID);
+            int nombresIndex = cursor.getColumnIndex(KEY_NOMBRES);
+            int apellidosIndex = cursor.getColumnIndex(KEY_APELLIDOS);
+            int documentoIndex = cursor.getColumnIndex(KEY_DOCUMENTO);
+            int correoIndex = cursor.getColumnIndex(KEY_CORREO);
+            
             do {
                 Persona persona = new Persona();
-                persona.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
-                persona.setNombres(cursor.getString(cursor.getColumnIndex(KEY_NOMBRES)));
-                persona.setApellidos(cursor.getString(cursor.getColumnIndex(KEY_APELLIDOS)));
-                persona.setDocumento(cursor.getString(cursor.getColumnIndex(KEY_DOCUMENTO)));
-                persona.setCorreo(cursor.getString(cursor.getColumnIndex(KEY_CORREO)));
+                if (idIndex != -1) {
+                    persona.setId(cursor.getInt(idIndex));
+                }
+                if (nombresIndex != -1) {
+                    persona.setNombres(cursor.getString(nombresIndex));
+                }
+                if (apellidosIndex != -1) {
+                    persona.setApellidos(cursor.getString(apellidosIndex));
+                }
+                if (documentoIndex != -1) {
+                    persona.setDocumento(cursor.getString(documentoIndex));
+                }
+                if (correoIndex != -1) {
+                    persona.setCorreo(cursor.getString(correoIndex));
+                }
 
                 personas.add(persona);
             } while (cursor.moveToNext());
@@ -182,19 +217,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(TABLE_CATEDRAS, null, KEY_ID + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null);
 
-        if (cursor != null)
-            cursor.moveToFirst();
-        else
-            return null;
-
-        Catedra catedra = new Catedra();
-        // Populate catedra object
-        catedra.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
-        catedra.setNombre(cursor.getString(cursor.getColumnIndex(KEY_NOMBRE)));
-        catedra.setHorario(cursor.getString(cursor.getColumnIndex(KEY_HORARIO)));
-
-        cursor.close();
-        return catedra;
+        if (cursor != null && cursor.moveToFirst()) {
+            Catedra catedra = new Catedra();
+            // Populate catedra object safely
+            int idIndex = cursor.getColumnIndex(KEY_ID);
+            int nombreIndex = cursor.getColumnIndex(KEY_NOMBRE);
+            int horarioIndex = cursor.getColumnIndex(KEY_HORARIO);
+            
+            if (idIndex != -1) {
+                catedra.setId(cursor.getInt(idIndex));
+            }
+            if (nombreIndex != -1) {
+                catedra.setNombre(cursor.getString(nombreIndex));
+            }
+            if (horarioIndex != -1) {
+                catedra.setHorario(cursor.getString(horarioIndex));
+            }
+            
+            cursor.close();
+            return catedra;
+        }
+        
+        if (cursor != null) {
+            cursor.close();
+        }
+        return null;
     }
 
     // Get all catedras
@@ -207,11 +254,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
+            // Get column indices once
+            int idIndex = cursor.getColumnIndex(KEY_ID);
+            int nombreIndex = cursor.getColumnIndex(KEY_NOMBRE);
+            int horarioIndex = cursor.getColumnIndex(KEY_HORARIO);
+            
             do {
                 Catedra catedra = new Catedra();
-                catedra.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
-                catedra.setNombre(cursor.getString(cursor.getColumnIndex(KEY_NOMBRE)));
-                catedra.setHorario(cursor.getString(cursor.getColumnIndex(KEY_HORARIO)));
+                if (idIndex != -1) {
+                    catedra.setId(cursor.getInt(idIndex));
+                }
+                if (nombreIndex != -1) {
+                    catedra.setNombre(cursor.getString(nombreIndex));
+                }
+                if (horarioIndex != -1) {
+                    catedra.setHorario(cursor.getString(horarioIndex));
+                }
 
                 catedras.add(catedra);
             } while (cursor.moveToNext());

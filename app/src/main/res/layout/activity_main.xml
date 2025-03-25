@@ -21,10 +21,11 @@
             android:text="Sistema Académico"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
-            android:textSize="24sp"
+            android:textSize="28sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-medium"
-            android:elevation="4dp" />
+            android:elevation="8dp"
+            android:layout_marginBottom="16dp" />
 
         <!-- Datos Personales Section -->
         <androidx.cardview.widget.CardView
@@ -270,24 +271,23 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Consulta General button -->
+        <!-- Botón de Consulta General -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnConsultaGeneral"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="20dp"
+            android:layout_height="64dp"
+            android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="16dp"
-            android:backgroundTint="#283593"
-            android:padding="12dp"
+            android:backgroundTint="#4CAF50"
             android:text="CONSULTA GENERAL"
-            android:textColor="#FFFFFF"
             android:textSize="16sp"
-            android:fontFamily="sans-serif-medium"
-            app:cornerRadius="10dp"
-            app:rippleColor="#7986CB"
+            android:textColor="#FFFFFF"
+            app:cornerRadius="12dp"
             app:icon="@android:drawable/ic_menu_search"
             app:iconGravity="textStart"
+            app:iconSize="24dp"
             app:iconTint="#FFFFFF"
+            app:rippleColor="#81C784"
             android:elevation="4dp" />
     </LinearLayout>
 </ScrollView>
